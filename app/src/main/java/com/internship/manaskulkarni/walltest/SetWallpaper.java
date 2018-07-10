@@ -34,7 +34,7 @@ public class SetWallpaper extends AppCompatActivity {
 
     private static final String TAG = "setWallpaperActivity";
 
-    private static Context mContext;
+    private static Context mContext = getContext();
     //private static MainActivity instance;
 
     public Context context = SetWallpaper.this;
@@ -52,7 +52,7 @@ public class SetWallpaper extends AppCompatActivity {
     }*/
 
     public static Context getContext() {
-        //  return instance.getApplicationContext();
+        //return instance.getApplicationContext();
         return mContext;
     }
 
@@ -77,7 +77,7 @@ public class SetWallpaper extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_set_wallpaper);
 
-        mContext = getApplicationContext();
+        //mContext = getApplicationContext();
 
         // timer = new Timer();
 
@@ -127,7 +127,7 @@ public class SetWallpaper extends AppCompatActivity {
                     final WallpaperManager wallpaperManager = WallpaperManager.getInstance(getApplicationContext());
                     try {
                         wallpaperManager.setBitmap(bitmap);
-                        String urlString =  wallpaper.get(posi+1).getUrl();
+                        String urlString = wallpaper.get(posi).getUrl();
                         Log.d(TAG,"urlString: "+urlString);
                         Toast.makeText(context, "Wallpaper applied", Toast.LENGTH_SHORT).show();
 /*
@@ -158,7 +158,7 @@ public class SetWallpaper extends AppCompatActivity {
                                 .putInt("sendPosition",posi)
                                 .build();*/
                         PeriodicWorkRequest wallpaperUpdateWork = new PeriodicWorkRequest.Builder(
-                                WallpaperUpdateWorker.class, 15, TimeUnit.MINUTES)
+                                WallpaperUpdateWorker.class, 15, TimeUnit.MINUTES, 5, TimeUnit.MINUTES)
                                 .setConstraints(constraints)
                                 //.setInputData(data)
                                 .addTag(WallpaperUpdateWorker.TAG)

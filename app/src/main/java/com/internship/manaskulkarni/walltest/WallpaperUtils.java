@@ -1,6 +1,7 @@
 package com.internship.manaskulkarni.walltest;
 
 import android.app.WallpaperManager;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -28,23 +29,15 @@ import static com.internship.manaskulkarni.walltest.SetWallpaper.getContext;
 public class WallpaperUtils {
 
     private static final String TAG = "WallpaperUtils";
-    private static WallpaperManager wallpaperManager;
+    private WallpaperManager wallpaperManager;
     // private static Bitmap bitmap;
-    private static Random random = new Random();
-    private static int position = 3;
+    private Random random = new Random();
+    private int position = 3;
     //private int position = 2;
+    private Context c = SetWallpaper.getContext();
 
-    static void autoChangeWallpaper() {
+    public void autoChangeWallpaper(final Context context) {
 
-        //(int position, String wallpaper, Context context)
-        /*wallpaperManager = WallpaperManager.getInstance(context);
-        try {
-            URL url = new URL(wallpaper);
-            bitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-            wallpaperManager.setBitmap(bitmap);
-        } catch(IOException e) {
-            System.out.println(e);
-        }*/
 
 
         final Call<PostList> jsonData = RedditAPI.getRedditService().getPostList();
@@ -71,47 +64,15 @@ public class WallpaperUtils {
                             children.get(i).getData().getUrl()
                     ));
                 }
-/*
-                for (int j = 0; j < children.size(); j++) {
-                    Log.d(TAG, "onResponse: \n" +
-                            "Wallpaper ID: " + children.get(j).getData().getId() + "\n" +
-                            "Category:" + category + "\n" +
-                            "Title:" + title + "\n" +
-                            "Wallpaper Title: " + children.get(j).getData().getTitle() + "\n" +
-                            "Wallpaper Thumbnail: " + children.get(j).getData().getThumbnail() + "\n" +
-                            "Wallpaper URL: " + children.get(j).getData().getUrl() + "\n");
-                }*/
 
-                //WallpaperManager wallpaperManager = WallpaperManager.getInstance(getContext());
-                //Bitmap bitmap;
                 position = random.nextInt(4);
                 Log.d(TAG, "Random Postion: " + position);
                 String temp = wallpapers.get(position).getUrl();
 
-                wallpaperManager = WallpaperManager.getInstance(getContext());
+                wallpaperManager = WallpaperManager.getInstance(c);
 
                 if (position != (wallpapers.size() - 1)) {
-                    // String urlString = wallpapers.get(position + 1).getUrl();
-/*                    try {
-                        //URL url = new URL(temp);
-                        //bitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-                        bitmap = getBitmapFromURL(temp);
-                        wallpaperManager.setBitmap(bitmap);
-                    } catch (IOException e) {
-                        System.out.println(e);
-                    }*/
-/*                    FutureTarget<Bitmap> futureTarget =
-                            Glide.with(getContext())
-                                    .asBitmap()
-                                    .load(temp)
-                                    .submit();
 
-                    try {
-                        bitmap = futureTarget.get();
-                        wallpaperManager.setBitmap(bitmap);
-                    } catch (InterruptedException | ExecutionException | IOException e) {
-                        e.printStackTrace();
-                    }*/
                     Glide.with(getContext())
                             .asBitmap()
                             .load(temp)
@@ -127,17 +88,7 @@ public class WallpaperUtils {
                             });
 
 
-                }/* else {
-                   // String urlString = wallpapers.get(0).getUrl();
-                    try {
-*//*                        URL url = new URL(temp);
-                        bitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());*//*
-                        bitmap = getBitmapFromURL(temp);
-                        wallpaperManager.setBitmap(bitmap);
-                    } catch (IOException e) {
-                        System.out.println(e);
-                    }
-                }*/
+                }
             }
 
             @Override
@@ -149,33 +100,5 @@ public class WallpaperUtils {
         });
     }
 
-    public static Bitmap getBitmapFromURL(String src) {
-/*        try {
-            URL url = new URL(src);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setDoInput(true);
-            connection.connect();
-            InputStream input = connection.getInputStream();
-            return BitmapFactory.decodeStream(input);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }*/
-/*        FutureTarget<Bitmap> futureTarget =
-                Glide.with(getContext())
-                        .asBitmap()
-                        .load(src)
-                        .submit();
 
-        try {
-            return futureTarget.get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            return null;
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-            return null;
-        }*/
-        return null;
-    }
 }
