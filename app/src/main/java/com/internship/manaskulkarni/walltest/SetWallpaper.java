@@ -22,12 +22,9 @@ import com.bumptech.glide.request.target.Target;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
 import androidx.work.Constraints;
-import androidx.work.Data;
 import androidx.work.NetworkType;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
@@ -38,18 +35,21 @@ public class SetWallpaper extends AppCompatActivity {
     private static final String TAG = "setWallpaperActivity";
 
     private static Context mContext;
-    private static MainActivity instance;
+    //private static MainActivity instance;
 
     public Context context = SetWallpaper.this;
     private Bitmap bitmap;
-    private Timer timer;
-    private TimerTask timerTask;
+    //private Timer timer;
+    //private TimerTask timerTask;
     private int sendPostion;
     private ArrayList<Wallpaper> sendWallpaper;
 
-    public static MainActivity getInstance() {
+    //public PeriodicWorkRequest.Builder changeWallpaperBuilder;
+    //public PeriodicWorkRequest changeWallpaper;
+
+    /*public static MainActivity getInstance() {
         return instance;
-    }
+    }*/
 
     public static Context getContext() {
         //  return instance.getApplicationContext();
@@ -130,27 +130,42 @@ public class SetWallpaper extends AppCompatActivity {
                         String urlString =  wallpaper.get(posi+1).getUrl();
                         Log.d(TAG,"urlString: "+urlString);
                         Toast.makeText(context, "Wallpaper applied", Toast.LENGTH_SHORT).show();
+/*
+                        Constraints constraints = new Constraints.Builder().setRequiredNetworkType(NetworkType
+                                .CONNECTED).build();
+
+                        changeWallpaperBuilder = new PeriodicWorkRequest.Builder(WorkerTest.class, 16, TimeUnit.MINUTES).setConstraints(constraints);
+
+                        changeWallpaper = changeWallpaperBuilder.build();
+                        WorkManager.getInstance().cancelAllWork();
+                        WorkManager.getInstance().enqueue(changeWallpaper);*/
+
+
                         /*Intent serviceIntent = new Intent(context,AutoChangeWallpaper.class);
                         //serviceIntent.setAction("com.internship.manaskulkarni.walltest.AutoChangeWallpaper");
                         context.startService(serviceIntent);*/
-/*                        JobManager.create(context).addJobCreator(new DemoJobCreator(posi,wallpaper,context));
+
+
+                        //JobManager.create(context).addJobCreator(new DemoJobCreator());
                         //JobConfig.setAllowSmallerIntervalsForMarshmallow(true);
-                        DemoSyncJob.schedulePeriodicJob();*/
+
+                        // DemoSyncJob.schedulePeriodicJob();
+
+
                         Constraints constraints = new Constraints.Builder()
                                 .setRequiredNetworkType(NetworkType.CONNECTED).build();
-                        Data data = new Data.Builder()
+                        /*Data data = new Data.Builder()
                                 .putInt("sendPosition",posi)
-                                .build();
+                                .build();*/
                         PeriodicWorkRequest wallpaperUpdateWork = new PeriodicWorkRequest.Builder(
                                 WallpaperUpdateWorker.class, 15, TimeUnit.MINUTES)
                                 .setConstraints(constraints)
-                                .setInputData(data)
+                                //.setInputData(data)
                                 .addTag(WallpaperUpdateWorker.TAG)
                                 .build();
-
                         if (WorkManager.getInstance() != null) {
+                            WorkManager.getInstance().cancelAllWork();
                             WorkManager.getInstance().enqueue(wallpaperUpdateWork);
-
                             Toast.makeText(context, "Enqueue applied", Toast.LENGTH_SHORT).show();
                         }
                     } catch (IOException e) {

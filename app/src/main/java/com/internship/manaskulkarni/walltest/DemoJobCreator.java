@@ -14,19 +14,19 @@ public class DemoJobCreator implements JobCreator {
     int posi;
     Context context;
     ArrayList<Wallpaper> wallpaper;
-
+/*
     public DemoJobCreator(int posi,ArrayList<Wallpaper> wallpaper ,Context context) {
         this.posi = posi;
         this.wallpaper = wallpaper;
         this.context = context;
-    }
+    }*/
 
     @Nullable
     @Override
     public Job create(@NonNull String tag) {
         switch (tag) {
             case DemoSyncJob.TAG:
-                return new DemoSyncJob(posi,wallpaper,context);
+                return new DemoSyncJob();
             default:
                 return null;
         }

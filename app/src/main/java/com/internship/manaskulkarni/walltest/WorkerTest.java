@@ -1,36 +1,39 @@
 package com.internship.manaskulkarni.walltest;
 
-import android.content.Context;
-import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.app.WallpaperManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.support.annotation.NonNull;
 import android.util.Log;
-import android.view.GestureDetector;
-import android.view.MotionEvent;
-import android.view.View;
 import android.widget.Toast;
 
 import com.internship.manaskulkarni.walltest.model.Child;
 import com.internship.manaskulkarni.walltest.model.PostList;
 
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.work.Worker;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity {
+public class WorkerTest extends Worker {
 
-    private static final String TAG = "MainActivity";
-    //ThumbnailAdapter adapter;
 
+    private static final String TAG = "WorkerTest";
+    private SetWallpaper setWallpaper;
+    private int position = 2;
+
+    @NonNull
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
+    public Result doWork() {
+/*        Handler mainHandler = new Handler(Looper.getMainLooper());
+        Runnable myRunnable = new Runnable() {
+            @Override
+            public void run() {*/
 
         final Call<PostList> jsonData = RedditAPI.getRedditService().getPostList();
 
@@ -67,64 +70,42 @@ public class MainActivity extends AppCompatActivity {
                             "Wallpaper URL: " + children.get(j).getData().getUrl() + "\n");
                 }
 
-
-                GridLayoutManager layoutManager = new GridLayoutManager(MainActivity.this, 2);
-
-                RecyclerView mRecyclerView = findViewById(R.id.idRecyclerView);
-                mRecyclerView.setLayoutManager(layoutManager);
-                ThumbnailAdapter thumbnailAdapter = new ThumbnailAdapter(MainActivity.this, wallpapers);
-
-                mRecyclerView.setAdapter(thumbnailAdapter);
+                WallpaperManager wallpaperManager = WallpaperManager.getInstance(getApplicationContext());
+                Bitmap bitmap;
 
 
+                if (position != (wallpapers.size() - 1)) {
+                    String urlString = wallpapers.get(position + 1).getUrl();
+                    try {
+                        URL url = new URL(urlString);
+                        bitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+                        wallpaperManager.setBitmap(bitmap);
+                    } catch (IOException e) {
+                        System.out.println(e);
+                    }
+
+                } else {
+                    String urlString = wallpapers.get(0).getUrl();
+                    try {
+                        URL url = new URL(urlString);
+                        bitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+                        wallpaperManager.setBitmap(bitmap);
+                    } catch (IOException e) {
+                        System.out.println(e);
+                    }
+                }
             }
 
             @Override
             public void onFailure(Call<PostList> call, Throwable t) {
+
                 Log.e(TAG, "onFailure: Unable to retrieve RSS: " + t.getMessage());
-                Toast.makeText(MainActivity.this, "An error occured!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "An error occured!", Toast.LENGTH_SHORT).show();
             }
         });
+/*            }
+        };
+        mainHandler.post(myRunnable);*/
+        return Result.SUCCESS;
     }
-
-
-    public static class RecyclerItemClickListener implements RecyclerView.OnItemTouchListener {
-        private OnItemClickListener mListener;
-
-        public interface OnItemClickListener {
-            void onItemClick(View view, int position);
-        }
-
-        GestureDetector mGestureDetector;
-
-        public RecyclerItemClickListener(Context context, OnItemClickListener listener) {
-            mListener = listener;
-            mGestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
-                @Override
-                public boolean onSingleTapUp(MotionEvent e) {
-                    return true;
-                }
-            });
-        }
-
-        @Override
-        public boolean onInterceptTouchEvent(RecyclerView view, MotionEvent e) {
-            View childView = view.findChildViewUnder(e.getX(), e.getY());
-            if (childView != null && mListener != null && mGestureDetector.onTouchEvent(e)) {
-                mListener.onItemClick(childView, view.getChildAdapterPosition(childView));
-            }
-            return false;
-        }
-
-        @Override
-        public void onTouchEvent(RecyclerView view, MotionEvent motionEvent) {
-        }
-
-        @Override
-        public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
-
-        }
-    }
-
-
 }
